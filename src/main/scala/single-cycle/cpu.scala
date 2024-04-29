@@ -23,10 +23,10 @@ class SingleCycleCPU(implicit val conf: CPUConfig) extends BaseCPU {
   val controlTransfer = Module(new ControlTransferUnit())
   val (cycleCount, _) = Counter(true.B, 1 << 30)
 
-  control.io := DontCare
-  registers.io := DontCare
-  aluControl.io := DontCare
-  alu.io := DontCare
+  // control.io := DontCare
+  // registers.io := DontCare
+  // aluControl.io := DontCare
+  // alu.io := DontCare
   immGen.io := DontCare
   controlTransfer.io := DontCare
   io.dmem <> DontCare
@@ -44,6 +44,35 @@ class SingleCycleCPU(implicit val conf: CPUConfig) extends BaseCPU {
 
   //Your code goes here
 
+  // NOTE: connecting wires:
+  //    destination := source  (ex:  x := io.result)
+
+  // split instruction signal into corresponding parts
+  val funct7 = instruction(31, 25)
+  val rs2 = instruction(24, 20)
+  val rs1 = instruction(19, 15)
+  val funct3 = instruction(14, 12)
+  val rd = instruction(11, 7)
+  val opcode = instruction(6, 0)
+
+  // connect instruction parts correctly
+  control.io.opcode := opcode
+  aluControl.io.funct7 := funct7
+  aluControl.io.funct3 := funct3
+  registers.io.readreg1 := rs1
+  registers.io.readreg2 := rs2
+  registers.io.writereg := rd
+
+  // connect other inputs and outputs
+  aluControl.io.aluop := control.io.aluop
+  alu.io.operation := aluControl.io.operation
+  alu.io.operand1 := registers.io.readdata1
+  alu.io.operand2 := registers.io.readdata2
+  registers.io.writedata := alu.io.result
+  registers.io.wen := (rd =/= 0.U)
+
+  // increment pc counter
+  pc := pc + 4.U
 }
 
 /*
