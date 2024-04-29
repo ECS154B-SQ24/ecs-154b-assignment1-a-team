@@ -36,9 +36,9 @@ class ALUControl extends Module {
 
   //Your code goes here
   switch(io.aluop){
-    is(0.U) { // none of the other types
-      return
-    }
+    // is(0.U) { // none of the other types
+    //   io.operation := "b11111".U // Invalid
+    // }
     is(1.U) { // 64-bit R-type
       switch(io.funct7){
         is("b0000000".U){
@@ -60,20 +60,22 @@ class ALUControl extends Module {
           }
         }
         is("b0000001".U){
-          is("b000".U) {io.operation := "b00110".U} // mul
-          is("b001".U) {io.operation := "b00111".U} // mulh
-          is("b010".U) {io.operation := "b11000".U} // mulhsu
-          is("b011".U) {io.operation := "b01000".U} // mulhu
-          is("b100".U) {io.operation := "b01011".U} // div
-          is("b101".U) {io.operation := "b01010".U} // divu
-          is("b110".U) {io.operation := "b11100".U} // rem
-          is("b111".U) {io.operation := "b11011".U} // remu
+          switch(io.funct3){
+            is("b000".U) {io.operation := "b00110".U} // mul
+            is("b001".U) {io.operation := "b00111".U} // mulh
+            is("b010".U) {io.operation := "b11000".U} // mulhsu
+            is("b011".U) {io.operation := "b01000".U} // mulhu
+            is("b100".U) {io.operation := "b01011".U} // div
+            is("b101".U) {io.operation := "b01010".U} // divu
+            is("b110".U) {io.operation := "b11100".U} // rem
+            is("b111".U) {io.operation := "b11011".U} // remu
+          }
         }
       }
     }
-    is(2.U) { // 64-bit I-type
-      return // TODO couldnt find?
-    }
+    // is(2.U) { // 64-bit I-type
+    //   // don't implement
+    // }
     is(3.U) { // 32-bit R-type
       switch(io.funct7){
         is("b0000000".U){
@@ -90,21 +92,22 @@ class ALUControl extends Module {
           }
         }
         is("b0000001".U){
-          is("b000".U) {io.operation := "b00101".U} // mulw
-          is("b100".U) {io.operation := "b01001".U} // divw
-          is("b101".U) {io.operation := "b01100".U} // divuw
-          is("b110".U) {io.operation := "b11010".U} // remw
-          is("b111".U) {io.operation := "b11001".U} // remuw
+          switch(io.funct3){
+            is("b000".U) {io.operation := "b00101".U} // mulw
+            is("b100".U) {io.operation := "b01001".U} // divw
+            is("b101".U) {io.operation := "b01100".U} // divuw
+            is("b110".U) {io.operation := "b11010".U} // remw
+            is("b111".U) {io.operation := "b11001".U} // remuw
+          }
         }
       }
     }
-    }
-    is(4.U) { // 32-bit I-type
-      return // TODO couldnt find?
-    }
-    is(5.U) { // other (auipc, jal, jarl, load, store)
-      return // TODO couldnt find?
-    }
+    // is(4.U) { // 32-bit I-type
+    //   // don't implement
+    // }
+    // is(5.U) { // other (auipc, jal, jarl, load, store)
+    //   // don't implement i guess?
+    // }
   }
-  
+
 }
